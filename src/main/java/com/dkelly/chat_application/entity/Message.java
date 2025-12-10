@@ -3,8 +3,6 @@ package com.dkelly.chat_application.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.time.LocalDateTime;
-
 @Entity
 @Getter
 @Setter

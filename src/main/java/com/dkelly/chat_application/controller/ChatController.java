@@ -6,6 +6,7 @@ import com.dkelly.chat_application.service.ChatService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
@@ -22,20 +23,31 @@ public class ChatController {
         return chatService.create(request);
     }
 
-    @GetMapping
-    public Page<ChatResponse> findAll(
-            @RequestParam(required = false) Long companyId,
-            @RequestParam(required = false) Long userId,
+    @GetMapping(params = "companyId")
+    public Page<ChatResponse> getByCompany(
+            @RequestParam Long companyId,
             @RequestParam(required = false) String searchTerm,
-            @RequestParam(value="offset", required = false) Integer offset,
-            @RequestParam(value="pageSize", required = false) Integer pageSize,
-            @RequestParam(value="sortBy", required=false) String sortBy) {
+            Pageable pageable
+    ) {
+        return chatService.findByCompany(companyId, searchTerm, pageable);
+    }
 
-        if(null == offset) offset = 0;
-        if(null == pageSize) pageSize = 10;
-        if(StringUtils.isEmpty(sortBy)) sortBy = "id";
+    @GetMapping(params = "customerId")
+    public Page<ChatResponse> getByCustomer(
+            @RequestParam Long customerId,
+            @RequestParam(required = false) String searchTerm,
+            Pageable pageable
+    ) {
+        return chatService.findByCustomer(customerId, searchTerm, pageable);
+    }
 
-        return chatService.findAll(companyId, userId, searchTerm, PageRequest.of(offset, pageSize, Sort.by(sortBy)));
+    @GetMapping(params = "assignedUserId")
+    public Page<ChatResponse> getByAssignedUser(
+            @RequestParam Long assignedUserId,
+            @RequestParam(required = false) String searchTerm,
+            Pageable pageable
+    ) {
+        return chatService.findByAssignedUser(assignedUserId, searchTerm, pageable);
     }
 
 

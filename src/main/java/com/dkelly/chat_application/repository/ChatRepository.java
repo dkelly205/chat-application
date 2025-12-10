@@ -9,12 +9,16 @@ public interface ChatRepository extends JpaRepository<Chat, Long> {
 
     Page<Chat> findByCompanyId(Long companyId, Pageable pageable);
 
-    // All chats a user belongs to
-    Page<Chat> findByMembersId(Long userId, Pageable pageable);
+    Page<Chat> findByCustomerId(Long userId, Pageable pageable);
 
     Page<Chat> findByCompanyIdAndNameContainingIgnoreCase(
             Long companyId, String keyword, Pageable pageable);
 
-    Page<Chat> findByMembersIdAndNameContainingIgnoreCase(
+    Page<Chat> findByCustomerIdAndNameContainingIgnoreCase(
+            Long userId, String keyword, Pageable pageable);
+
+    Page<Chat> findByAssignedUserId(Long userId, Pageable pageable);
+
+    Page<Chat> findByAssignedUserIdAndNameContainingIgnoreCase(
             Long userId, String keyword, Pageable pageable);
 }

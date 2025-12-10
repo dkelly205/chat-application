@@ -12,10 +12,7 @@ import com.dkelly.chat_application.service.MessageService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-
-import java.time.LocalDateTime;
 
 @Service
 @RequiredArgsConstructor
@@ -51,6 +48,6 @@ public class MessageServiceImpl implements MessageService {
     }
 
     public Page<Message> getChatMessages(Long chatId, PageRequest pageRequest) {
-        return messageRepository.findByChatIdOrderByTimestampAsc(chatId, pageRequest);
+        return messageRepository.findByChatId(chatId, pageRequest);
     }
 }

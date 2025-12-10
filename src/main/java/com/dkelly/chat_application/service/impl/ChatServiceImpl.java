@@ -12,9 +12,9 @@ import com.dkelly.chat_application.service.ChatService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -53,31 +53,7 @@ public class ChatServiceImpl implements ChatService {
         );
     }
 
-    @Override
-    public Page<ChatResponse> findAll(Long companyId, Long userId, String searchTerm, PageRequest pageRequest) {
-        Page<Chat> chats;
-
-        boolean hasSearch = (searchTerm != null && !searchTerm.isBlank());
-
-        if (companyId != null) {
-            if(hasSearch){
-                chats = chatRepository.findByCompanyIdAndNameContainingIgnoreCase(companyId, searchTerm, pageRequest);
-            } else {
-                chats = chatRepository.findByCompanyId(companyId, pageRequest);
-            }
-        } else if (userId != null) {
-            if (hasSearch) {
-                chats = chatRepository.findByMembersIdAndNameContainingIgnoreCase(
-                        userId,
-                        searchTerm,
-                        pageRequest);
-            } else {
-                chats = chatRepository.findByMembersId(userId, pageRequest);
-            }
-        } else {
-            throw new IllegalArgumentException("Either companyId or userId must be provided");
-        }
-
+    private static Page<ChatResponse> mapToChatResponse(Page<Chat> chats) {
         return chats.map(chat -> new ChatResponse(
                 chat.getId(),
                 chat.getName(),
@@ -85,6 +61,52 @@ public class ChatServiceImpl implements ChatService {
                 chat.getCustomer().getId(),
                 chat.getAssignedUser().getId()
         ));
+    }
+
+    @Override
+    public Page<ChatResponse> findByCompany(Long companyId, String searchTerm, Pageable pageable) {
+        boolean hasSearch = (searchTerm != null && !searchTerm.isBlank());
+
+        Page<Chat> chats;
+        if(hasSearch){
+            chats = chatRepository.findByCompanyIdAndNameContainingIgnoreCase(companyId, searchTerm, pageable);
+        } else {
+            chats = chatRepository.findByCompanyId(companyId, pageable);
+        }
+        return mapToChatResponse(chats);
+
+    }
+
+    @Override
+    public Page<ChatResponse> findByCustomer(Long customerId, String searchTerm, Pageable pageable) {
+        boolean hasSearch = (searchTerm != null && !searchTerm.isBlank());
+
+        Page<Chat> chats;
+        if (hasSearch) {
+            chats = chatRepository.findByCustomerIdAndNameContainingIgnoreCase(
+                    customerId,
+                    searchTerm,
+                    pageable);
+        } else {
+            chats = chatRepository.findByCustomerId(customerId, pageable);
+        }
+        return mapToChatResponse(chats);
+
+    }
+
+    @Override
+    public Page<ChatResponse> findByAssignedUser(Long userId, String searchTerm, Pageable pageable) {
+        boolean hasSearch = (searchTerm != null && !searchTerm.isBlank());
+        Page<Chat> chats;
+        if (hasSearch) {
+            chats = chatRepository.findByAssignedUserIdAndNameContainingIgnoreCase(
+                    userId,
+                    searchTerm,
+                    pageable);
+        } else {
+            chats = chatRepository.findByAssignedUserId(userId, pageable);
+        }
+        return mapToChatResponse(chats);
 
     }
 }
